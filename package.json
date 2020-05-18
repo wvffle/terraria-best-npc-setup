@@ -1,0 +1,21 @@
+{
+  "name": "terraria",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chance": "^1.1.5",
+    "cheerio": "^1.0.0-rc.3",
+    "fastpriorityqueue": "^0.6.3",
+    "lodash.debounce": "^4.0.8",
+    "lodash.defer": "^4.1.0",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5"
+  }
+}
