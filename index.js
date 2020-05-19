@@ -8,6 +8,41 @@ const crypto = require('crypto')
 const WIKI_URL = 'https://terraria.gamepedia.com/NPCs'
 const PREFERENCES_ID = 'NPC_preferences'
 
+// Constraints
+const CONSTRAINTS = {
+    // Additional items
+    ['Witch Doctor'] (biome) {
+        return biome === 'Jungle'
+    },
+
+    // Additional items
+    ['Pirate'] (biome) {
+        return biome === 'Ocean'
+    },
+
+    // Game requirement
+    ['Truffle'] (biome) {
+        return biome === 'Mushroom'
+    },
+
+    ['Nurse'] (biome, npcs) {
+        return (biome === 'Hallow' || biome === 'Desert')
+            && npcs.length === 2
+            && npcs.some(npc => npc.name === 'Arms Dealer')
+    },
+
+    all (biome, npcs) {
+        // NOTE: I don't want to have Mushroom more than once so if the city is in Mushroom it has to have Truffle
+        // TODO: Add biome constraints
+        if (biome === 'Mushroom') {
+            return npcs.some(npc => npc.name === 'Truffle')
+        }
+
+        return true
+    }
+}
+
+
 // Base happiness multiplier
 const BASE_HAPPINESS = 1e6
 
@@ -227,34 +262,6 @@ let exit = false
     const npc_num = NPC.map.size
     console.log(`Fetched ${npc_num} NPCs`)
 
-    const constraints = {
-        ['Witch Doctor'] (biome) {
-            return biome === 'Jungle'
-        },
-
-        ['Pirate'] (biome) {
-            return biome === 'Ocean'
-        },
-
-        ['Truffle'] (biome) {
-            return biome === 'Mushroom'
-        },
-
-        ['Nurse'] (biome, npcs) {
-            return (biome === 'Hallow' || biome === 'Desert')
-                && npcs.length === 2
-                && npcs.some(npc => npc.name !== 'Arms Dealer')
-        },
-
-        all (biome, npcs) {
-            if (biome === 'Mushroom') {
-                return npcs.some(npc => npc.name === 'Truffle')
-            }
-
-            return true
-        }
-    }
-
     console.log('Creating 2-NPC cities')
     for (const npc1 of NPC.map.values()) {
         for (const npc2 of NPC.map.values()) {
@@ -265,15 +272,15 @@ let exit = false
 
                 let skip = false
                 for (const npc of [npc1, npc2]) {
-                    if (npc.name in constraints) {
-                        if (!constraints[npc.name](biome, [npc1, npc2])) {
+                    if (npc.name in CONSTRAINTS) {
+                        if (!CONSTRAINTS[npc.name](biome, [npc1, npc2])) {
                             skip = true
                             break
                         }
                     }
                 }
 
-                if (skip || !constraints.all(biome, [npc1, npc2])) {
+                if (skip || !CONSTRAINTS.all(biome, [npc1, npc2])) {
                     continue
                 }
 
@@ -298,15 +305,15 @@ let exit = false
 
                     let skip = false
                     for (const npc of [npc1, npc2, npc3]) {
-                        if (npc.name in constraints) {
-                            if (!constraints[npc.name](biome, [npc1, npc2, npc3])) {
+                        if (npc.name in CONSTRAINTS) {
+                            if (!CONSTRAINTS[npc.name](biome, [npc1, npc2, npc3])) {
                                 skip = true
                                 break
                             }
                         }
                     }
 
-                    if (skip || !constraints.all(biome, [npc1, npc2, npc3])) {
+                    if (skip || !CONSTRAINTS.all(biome, [npc1, npc2, npc3])) {
                         continue
                     }
 
@@ -441,8 +448,11 @@ let exit = false
 
     console.log(`New best city found`)
 
-    let readme = '## Best case\n'
+    let reamde = `So Terraria 1.4.0.2 just came out and I wanted to know how to pair my npcs for the highest price modifiers.\n
+I have time and I don't like to think about complex problems so it's pretty much a random search of the best result.\n
+If you want to run it yourself and possibly fry your computer, then clone it, adjust constants ath the top and just run node index.js. When a new best score is found, program will stop, notify you and update readme.\n\n`
 
+    readme += '## Best case\n'
     readme += `Score: ${best.score ^ 0}\n\n`
     readme += 'Avg. Modifier | Biome | NPCs\n'
     readme += '-------- | ----- | ----\n'

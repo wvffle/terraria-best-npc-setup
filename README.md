@@ -1,3 +1,11 @@
+So Terraria 1.4.0.2 just came out and I wanted to know how to pair my npcs for the highest price modifiers
+
+I have time and I don't like to think about complex problems so it's pretty much a random search of the best result
+
+If you want to run it yourself and possibly fry your computer, then clone it, adjust constants ath the top and just run `node index.js`. When a new best score is found, program will stop, notify you and update readme
+
+---
+
 ## Best case
 Score: 822468
 
