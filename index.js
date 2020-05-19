@@ -42,20 +42,21 @@ const CONSTRAINTS = {
     }
 }
 
-
 // Base happiness multiplier
 const BASE_HAPPINESS = 1e6
 
 // Loop timeout
 const TIMEOUT = 3e4
 
+// NOTE: The higher MAX_MOD, the lower TIMEOUT should be
 // Maximum avg. modifier
-const MAX_MOD = 96.66
+const MAX_MOD = 85.6
 
 const NPC_BLACKLIST = [
     'Santa Claus'
 ]
 
+// TODO: Fetch from wiki
 const BIOME_MOD = {
     loves: 0.9,
     likes: 0.95,
@@ -63,6 +64,7 @@ const BIOME_MOD = {
     hates: 1.1
 }
 
+// TODO: Fetch from wiki
 const NPC_MOD = {
     loves: 0.9,
     likes: 0.95,
@@ -70,6 +72,7 @@ const NPC_MOD = {
     hates: 1.1
 }
 
+// TODO: Fetch from wiki
 const NEIGHBOUR_MOD = {
     2: 0.9,
     3: 1
@@ -421,10 +424,10 @@ let exit = false
         }
     }
 
-    let prev_score = BASE_HAPPINESS * 2
 
     await fs.writeFile('cache.json', JSON.stringify(Object.keys(seen)))
 
+    let prev_score = BASE_HAPPINESS * 2
     try {
         const fp = await fs.readFile(`${__dirname}/README.md`)
         const score = parseInt(`${fp}`.match(/Score: (\d+)/)[1], 10)
@@ -446,9 +449,11 @@ let exit = false
         return
     }
 
-    console.log(`New best city found`)
+    console.log(`+------------------------------------------+`)
+    console.log(`| New best city found, please create a PR! |`)
+    console.log(`+------------------------------------------+`)
 
-    let reamde = `So Terraria 1.4.0.2 just came out and I wanted to know how to pair my npcs for the highest price modifiers.\n
+    let readme = `So Terraria 1.4.0.2 just came out and I wanted to know how to pair my npcs for the highest price modifiers.\n
 I have time and I don't like to think about complex problems so it's pretty much a random search of the best result.\n
 If you want to run it yourself and possibly fry your computer, then clone it, adjust constants ath the top and just run node index.js. When a new best score is found, program will stop, notify you and update readme.\n\n`
 
