@@ -8,6 +8,42 @@ const crypto = require('crypto')
 const WIKI_URL = 'https://terraria.gamepedia.com/NPCs'
 const PREFERENCES_ID = 'NPC_preferences'
 
+// Base happiness multiplier
+const BASE_HAPPINESS = 1e6
+
+const SEARCH_TIMEOUT = 3e4
+const SEARCH_TRESHOLD = 1e3
+
+// NOTE: The higher MAX_MOD, the lower TIMEOUT should be
+// Maximum avg. modifier
+const MAX_MOD = 85.6
+
+const NPC_BLACKLIST = [
+    'Santa Claus'
+]
+
+// TODO: Fetch from wiki
+const BIOME_MOD = {
+    loves: 0.9,
+    likes: 0.95,
+    dislikes: 1.5,
+    hates: 1.1
+}
+
+// TODO: Fetch from wiki
+const NPC_MOD = {
+    loves: 0.9,
+    likes: 0.95,
+    dislikes: 1.5,
+    hates: 1.1
+}
+
+// TODO: Fetch from wiki
+const NEIGHBOUR_MOD = {
+    2: 0.9,
+    3: 1
+}
+
 // Constraints
 const CONSTRAINTS = {
     // Additional items
@@ -40,42 +76,6 @@ const CONSTRAINTS = {
 
         return true
     }
-}
-
-// Base happiness multiplier
-const BASE_HAPPINESS = 1e6
-
-// Loop timeout
-const TIMEOUT = 3e4
-
-// NOTE: The higher MAX_MOD, the lower TIMEOUT should be
-// Maximum avg. modifier
-const MAX_MOD = 85.6
-
-const NPC_BLACKLIST = [
-    'Santa Claus'
-]
-
-// TODO: Fetch from wiki
-const BIOME_MOD = {
-    loves: 0.9,
-    likes: 0.95,
-    dislikes: 1.5,
-    hates: 1.1
-}
-
-// TODO: Fetch from wiki
-const NPC_MOD = {
-    loves: 0.9,
-    likes: 0.95,
-    dislikes: 1.5,
-    hates: 1.1
-}
-
-// TODO: Fetch from wiki
-const NEIGHBOUR_MOD = {
-    2: 0.9,
-    3: 1
 }
 
 const biomes = new Set(['Mushroom'])
@@ -381,7 +381,13 @@ let exit = false
         // NOTE: The lowest we have is 2-NPC cities
         //       So there is no way to match last NPC
         while (candidate.npcs_num < npc_num - 1 && possible_cities.length > 0 && exit === false) {
-            if (+new Date() - then > TIMEOUT) {
+            if (results.length >= SEARCH_TRESHOLD) {
+                exit = true
+                console.log('MAX TRESHOLD REACHED')
+                continue
+            }
+
+            if (+new Date() - then > SEARCH_TIMEOUT) {
                 exit = true
                 console.log('TIMED OUT')
                 continue
@@ -444,9 +450,11 @@ let exit = false
         return 0
     })[0]
 
-    if (!best || prev_score <= best.score) {
-        console.log(`No new score found. No changes`)
+    if (!best) {
+        console.log(`No new score found.`)
         return
+    } else {
+        console.log(`New score: ${best.score}`)
     }
 
     console.log(`+------------------------------------------+`)
